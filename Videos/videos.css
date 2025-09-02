@@ -34,12 +34,20 @@
 }
 
 *{box-sizing:border-box}
-html,body{height:100%}
+/* 🔧 FIX SCROLL: dùng min-height + overflow-y */
+html,body{
+  min-height:100%;
+  height:auto;
+  max-width:100%;
+}
+html{ overflow-y:auto; }
 body{
   margin:0;
   background:var(--bg);
   color:var(--text);
   font:16px/1.5 system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji","Segoe UI Emoji";
+  overflow-y:auto;
+  overscroll-behavior-y: contain;
 }
 
 /**************************************
@@ -52,6 +60,7 @@ body:has(.sidebar){ padding-left: var(--sidebar-w); }
   background: var(--sidebar-bg);
   border-right:1px solid var(--border);
   display:flex; flex-direction:column; gap:8px; z-index:20;
+  overflow-y:auto;
 }
 .sidebar__logo{ display:flex; align-items:center; gap:10px; padding:18px 16px 10px; color:var(--sidebar-text); }
 .sidebar__logo .logo{ font-size:22px; }
@@ -118,6 +127,7 @@ body:has(.sidebar){ padding-left: var(--sidebar-w); }
   padding:0 16px;
   display:grid;
   gap:16px;
+  min-height: 0; /* 🔧 tránh block con overflow */
 }
 .vid-toolbar{
   display:flex; align-items:center; justify-content:space-between;
@@ -520,9 +530,7 @@ body:has(.sidebar){ padding-left: var(--sidebar-w); }
   color:#94a3b8;
 }
 
-
-
-/* ===== Improve: lock background scroll when theater open ===== */
+/* ===== Lock background scroll only when theater open ===== */
 body:has(#vid-theater-dialog[open]) {
   overflow: hidden;
 }
@@ -531,12 +539,11 @@ body:has(#vid-theater-dialog[open]) {
 .url-preview{ display:flex; align-items:center; gap:12px; margin-top:8px; }
 .url-preview img{ width: 120px; height: 68px; object-fit: cover; border-radius: 8px; border:1px solid var(--border); }
 .url-preview .meta{ display:flex; flex-direction:column; gap:4px; }
-.url-preview .provider{ font-size:12px; color:var(--muted); }
-.url-preview .title{ font-weight:600; color:var(--text); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.url-preview .provider{ font-size:12px; color: var(--muted); }
+.url-preview .title{ font-weight:600; color: var(--text); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
 
 /* Small hint under player */
 .theater__hint{ font-size:12px; color:var(--muted); padding:8px 12px 0; }
-
 
 /* ===== Floating Unmute Button (appears over theater) ===== */
 .unmute-btn{
@@ -555,8 +562,6 @@ body:has(#vid-theater-dialog[open]) {
 }
 .unmute-btn[hidden]{ display:none; }
 .theater__stage{ position:relative; }
-
-
 
 /* ===== Sidebar: link base ===== */
 .sidebar__nav a{
@@ -619,18 +624,15 @@ body:has(#vid-theater-dialog[open]) {
 /* (Tuỳ chọn) hiệu ứng nhấn */
 .sidebar__nav a:active{ transform: translateY(1px); }
 
-
-
 /* =========================
    LIGHT THEME TWEAKS
    ========================= */
 :root.light{
-  /* bạn có thể đã khai báo rồi; đảm bảo các biến này có mặt */
   --bg:#f6f8fc;
   --elev:#ffffff;
   --text:#1b2430;
   --muted:#5b677a;
-  --primary:#2f6bff;         /* xanh chính trong light */
+  --primary:#2f6bff;
   --border:#e5e9f1;
 
   --sidebar-bg:#ffffff;
@@ -677,7 +679,6 @@ body:has(#vid-theater-dialog[open]) {
   box-shadow: 0 8px 20px rgba(0,0,0,.08);
 }
 :root.light .profile__avatar-fallback{
-  /* gradient tươi hơn trên nền sáng */
   background: radial-gradient(120px 120px at 30% 30%, rgba(0,0,0,.04), transparent),
               linear-gradient(135deg, #5c8cff, #3bc6ff);
 }
@@ -695,7 +696,7 @@ body:has(#vid-theater-dialog[open]) {
   color: #fff;
 }
 
-/* Mobile drawer transition giữ nguyên; nền sidebar sáng */
+/* Mobile drawer */
 @media (max-width: 920px){
   :root.light .sidebar{
     background: var(--sidebar-bg);
@@ -703,8 +704,7 @@ body:has(#vid-theater-dialog[open]) {
   }
 }
 
-
-/* === Login button: trung tính, viền mềm, hover dịu === */
+/* === Login button style === */
 #btn-login{
   display:inline-flex; align-items:center; gap:8px;
   padding:8px 12px;
@@ -720,14 +720,11 @@ body:has(#vid-theater-dialog[open]) {
 #btn-login:active{ transform: translateY(1px); }
 #btn-login:focus-visible{ box-shadow: var(--ring, 0 0 0 3px rgba(91,157,255,.35)); }
 
-/* Khi đã đăng nhập: giữ style trung tính (không primary) */
 #btn-login[data-state="in"]{
   background: var(--bg, #0f1115);
   border-color: var(--border, #2a3242);
   color: var(--text, #e6e6e6);
 }
-
-/* Khi chưa đăng nhập + có .btn-primary -> nổi bật */
 #btn-login[data-state="out"].btn-primary{
   background: var(--primary, #5b9dff);
   border-color: transparent;
@@ -735,7 +732,7 @@ body:has(#vid-theater-dialog[open]) {
 }
 #btn-login[data-state="out"].btn-primary:hover{ filter: brightness(1.06); }
 
-/* === Dialog đăng nhập / đăng ký (phù hợp hệ màu hiện tại) === */
+/* === Dialog đăng nhập / đăng ký === */
 #login-dialog, #signup-dialog{
   border:none; border-radius:16px;
   background:var(--elev, #151923); color:var(--text, #e6e6e6);
@@ -772,7 +769,7 @@ body:has(#vid-theater-dialog[open]) {
 }
 #login-dialog a:hover, #signup-dialog a:hover{ text-decoration:underline; }
 
-/* Mobile: dialog full-screen, tông màu theo nền */
+/* Mobile: dialog full-screen */
 @media (max-width: 960px){
   #login-dialog, #signup-dialog{
     width:100vw; height:100dvh; max-width:none; margin:0; border-radius:0;
