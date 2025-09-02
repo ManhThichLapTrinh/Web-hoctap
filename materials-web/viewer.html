@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Viewer - Kho Học Tập</title>
+
+  <!-- style chung -->
+  <link rel="stylesheet" href="../styles.css" />
+  <!-- style riêng -->
+  <link rel="stylesheet" href="./viewer.css" />
+  <link rel="icon" href="../favicon.png">
+  <meta name="theme-color" content="#151923"></head>
+<body>
+  <!-- Topbar -->
+  <header class="topbar">
+    <div class="brand">
+      <a class="btn btn-ghost" id="btn-back" href="./materials.html" title="Quay lại">←</a>
+      <h1 id="file-title">Đang tải...</h1>
+    </div>
+    <div class="actions">
+      <button id="toggle-theme" class="btn" title="Chuyển theme" aria-label="Chuyển theme">🌓</button>
+      <button id="btn-prev" class="btn btn-ghost" title="Tài liệu trước (←/K)">⟨ Trước</button>
+      <button id="btn-next" class="btn btn-ghost" title="Tài liệu sau (→/J)">Sau ⟩</button>
+      <button id="btn-download" class="btn" title="Tải xuống">⬇️ Tải</button>
+      <button id="btn-login" class="btn">Đăng nhập</button>
+    </div>
+  </header>
+
+  <!-- Layout: Sidebar trái + Viewer phải -->
+  <main class="viewer-wrap">
+    <aside class="viewer-info">
+      <div class="meta-grid">
+        <div class="meta-row"><span>Loại:</span><strong id="file-mime">—</strong></div>
+        <div class="meta-row"><span>Kích thước:</span><strong id="file-size">—</strong></div>
+        <div class="meta-row"><span>Thư mục:</span><strong id="folder-name">—</strong></div>
+      </div>
+
+      <h3 class="side-title">Tài liệu trong thư mục</h3>
+      <nav id="sibling-list" class="sibling-list" aria-label="Danh sách tài liệu trong thư mục"></nav>
+    </aside>
+
+    <section class="viewer-area">
+      <div id="viewer" class="viewer"></div>
+      <p id="no-preview" class="no-preview" hidden>Không có preview cho tệp này. Bạn có thể tải xuống để xem.</p>
+    </section>
+  </main>
+
+  <!-- Dialog đăng nhập (tái sử dụng giống materials) -->
+  <dialog id="login-dialog" class="dialog" aria-labelledby="login-title">
+    <form id="login-form" method="dialog" novalidate>
+      <h3 id="login-title">Đăng nhập</h3>
+      <div class="form-row">
+        <label for="login-email">Email</label>
+        <input id="login-email" type="email" required autocomplete="email" />
+      </div>
+      <div class="form-row">
+        <label for="login-password">Mật khẩu</label>
+        <input id="login-password" type="password" minlength="6" required autocomplete="current-password" />
+      </div>
+      <p id="login-error" class="form-error" hidden></p>
+      <menu class="dialog-actions">
+        <button value="cancel" class="btn">Huỷ</button>
+        <button id="login-submit" class="btn btn-primary">Đăng nhập</button>
+      </menu>
+    </form>
+  </dialog>
+
+  <script type="module" src="./viewer.js"></script></body>
+</html>

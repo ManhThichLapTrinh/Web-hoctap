@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Materials - Kho Học Tập</title>
+
+  <!-- style chung (ở thư mục gốc) -->
+  <link rel="stylesheet" href="../styles.css" />
+  <!-- style riêng cho trang materials (cùng folder với file này) -->
+  <link rel="stylesheet" href="./materials.css" />
+  <link rel="icon" href="../favicon.png">
+  <meta name="theme-color" content="#151923">
+</head>
+<body>
+  <!-- Topbar -->
+  <header class="topbar">
+    <div class="brand">
+      <span class="logo">📚</span>
+      <h1>Kho Học Tập</h1>
+    </div>
+
+    <div class="actions">
+      <button id="toggle-theme" class="btn" title="Chuyển theme" aria-label="Chuyển theme">🌓</button>
+      <div class="search-group">
+        <input id="mat-search" type="search" placeholder="Tìm trong materials (tên tệp/thư mục)..." autocomplete="off" />
+        <button id="mat-clear-search" class="btn btn-ghost" title="Xoá tìm kiếm" aria-label="Xoá tìm kiếm">✖</button>
+      </div>
+
+      <button id="btn-star" class="btn btn-ghost" title="Yêu thích">⭐</button>
+      <!-- nút login đồng bộ trang chủ -->
+      <button id="btn-login" class="btn btn-primary">Đăng nhập</button>
+    </div>
+  </header>
+
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="sidebar__logo">
+      <span class="logo">🎵</span>
+      <h2>Menu</h2>
+    </div>
+
+    <nav class="sidebar__nav">
+      <a href="../index.html"><span class="icon">👤</span><span class="label">Cá Nhân</span></a>
+      <a href="#"><span class="icon">✨</span><span class="label">Khám phá</span></a>
+      <a href="../learning/learning.html"><span class="icon">#</span><span class="label">Learning</span></a>
+      <a href="../Videos/videos.html"><span class="icon">📻</span><span class="label">Video</span></a>
+
+      <a href="#"><span class="icon">⭐</span><span class="label">Yêu Thích</span></a>
+
+      <details class="sidebar__group" id="lang-group">
+        <summary><span class="icon">🌐</span><span class="label">Ngôn ngữ</span></summary>
+        <div class="submenu">
+          <a href="#" data-lang="en"><span>🇬🇧</span> Tiếng Anh</a>
+          <a href="#" data-lang="ja"><span>🇯🇵</span> Tiếng Nhật</a>
+          <a href="#" data-lang="zh"><span>🇨🇳</span> Tiếng Trung</a>
+        </div>
+      </details>
+
+      <a href="./materials.html" class="active"><span class="icon">📂</span><span class="label">Materials</span></a>
+      <a href="#"><span class="icon">🏆</span><span class="label">Quan Tâm</span></a>
+      <a href="#"><span class="icon">🎥</span><span class="label">Đặc biệt</span></a>
+    </nav>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="materials-wrap">
+    <!-- Cột trái -->
+    <aside class="mat-left">
+      <header class="mat-left__head">
+        <h3>Materials</h3>
+        <button id="mat-new-folder" class="btn btn-primary">+ Thư mục</button>
+      </header>
+      <nav id="mat-tree" class="mat-tree"></nav>
+    </aside>
+
+    <!-- Cột phải -->
+    <section class="mat-main">
+      <header class="mat-toolbar">
+        <div class="mat-breadcrumbs" id="mat-breadcrumbs"></div>
+        <div class="mat-tools">
+          <label class="btn">
+            Tải lên
+            <input id="mat-file-input" type="file" multiple hidden />
+          </label>
+        </div>
+      </header>
+
+      <section id="mat-dropzone" class="mat-content dropzone">
+        <div id="mat-grid" class="grid"></div>
+        <p id="mat-empty" class="empty" hidden>Thư mục trống. Tạo thư mục hoặc kéo-thả/tải lên tệp.</p>
+      </section>
+    </section>
+  </main>
+
+  <!-- Template: Folder -->
+  <template id="mat-tpl-folder">
+    <div class="card folder" draggable="true" data-type="folder">
+      <div class="card__icon">📁</div>
+      <div class="card__name" data-name></div>
+      <div class="card__meta" data-meta></div>
+      <div class="card-actions">
+        <button class="btn btn-ghost" data-open>Mở</button>
+        <button class="btn" data-rename>Đổi tên</button>
+        <button class="btn btn-danger" data-delete>Xoá</button>
+      </div>
+    </div>
+  </template>
+
+  <!-- Template: File -->
+  <template id="mat-tpl-file">
+    <div class="card file" draggable="true" data-type="file">
+      <div class="card__icon" data-fileicon>📄</div>
+      <div class="card__name" data-name></div>
+      <div class="card__meta" data-meta></div>
+      <div class="card-actions">
+        <button class="btn btn-ghost" data-preview>Xem</button>
+        <button class="btn btn-ghost" data-download>Tải</button>
+        <button class="btn" data-rename>Đổi tên</button>
+        <button class="btn btn-danger" data-delete>Xoá</button>
+      </div>
+    </div>
+  </template>
+
+  <!-- Dialog xem trước -->
+  <dialog id="mat-preview-dialog" class="dialog">
+    <div class="player-header">
+      <h3 id="mat-preview-title">Xem tệp</h3>
+      <button id="mat-preview-close" class="btn">Đóng</button>
+    </div>
+    <div class="player-body">
+      <div id="mat-preview-area" class="preview-area"></div>
+    </div>
+  </dialog>
+
+  <!-- Modal: Login -->
+  <dialog id="login-dialog" class="dialog" aria-labelledby="login-title" aria-modal="true">
+    <form id="login-form" method="dialog" novalidate>
+      <h3 id="login-title">Đăng nhập</h3>
+
+      <div class="form-row">
+        <label for="login-email">Email</label>
+        <input id="login-email" type="email" placeholder="you@example.com" required autocomplete="email" />
+      </div>
+
+      <div class="form-row">
+        <label for="login-password">Mật khẩu</label>
+        <input id="login-password" type="password" placeholder="Tối thiểu 6 ký tự" minlength="6" required autocomplete="current-password" />
+      </div>
+
+      <p id="login-error" class="form-error" hidden></p>
+
+      <menu class="dialog-actions">
+        <button value="cancel" class="btn" type="button">Huỷ</button>
+        <button id="login-submit" class="btn btn-primary" value="default" type="submit">Đăng nhập</button>
+      </menu>
+
+      <p style="margin:8px 0 0; font-size:14px">
+        Chưa có tài khoản?
+        <a href="#" id="login-to-signup">Đăng ký</a>
+      </p>
+    </form>
+  </dialog>
+
+  <!-- Modal: Signup -->
+  <dialog id="signup-dialog" class="dialog" aria-labelledby="signup-title" aria-modal="true">
+    <form id="signup-form" method="dialog" novalidate>
+      <h3 id="signup-title">Tạo tài khoản</h3>
+
+      <div class="form-row">
+        <label for="signup-email">Email</label>
+        <input id="signup-email" type="email" required autocomplete="email" />
+      </div>
+
+      <div class="form-row">
+        <label for="signup-password">Mật khẩu</label>
+        <input id="signup-password" type="password" placeholder="Tối thiểu 6 ký tự" minlength="6" required autocomplete="new-password" />
+      </div>
+
+      <div class="form-row">
+        <label for="signup-password2">Nhập lại mật khẩu</label>
+        <input id="signup-password2" type="password" minlength="6" required autocomplete="new-password" />
+      </div>
+
+      <p id="signup-error" class="form-error" hidden></p>
+
+      <menu class="dialog-actions">
+        <button value="cancel" class="btn" type="button">Huỷ</button>
+        <button id="signup-submit" class="btn btn-primary" value="default" type="submit">Đăng ký</button>
+      </menu>
+
+      <p style="margin:8px 0 0; font-size:14px">
+        Đã có tài khoản?
+        <a href="#" id="signup-to-login">Đăng nhập</a>
+      </p>
+    </form>
+  </dialog>
+
+  <!-- App for Materials -->
+  <script type="module" src="./materials.js"></script>
+</body>
+</html>

@@ -1,0 +1,494 @@
+/**************************************
+ * THEME TOKENS
+ **************************************/
+:root{
+  --bg: #0f1115;
+  --elev: #151923;
+  --text: #e6e6e6;
+  --muted:#93a0b4;
+  --primary:#5b9dff;
+  --danger:#ff6b6b;
+  --border:#2a3242;
+
+  /* Mobile helpers */
+  --bg-2: var(--elev);
+  --card: var(--elev);
+
+  /* Sidebar */
+  --sidebar-w: 240px;
+  --sidebar-bg: #0b1230;
+  --sidebar-text: #c8d0e2;
+  --sidebar-muted:#9aa4bc;
+  --sidebar-active:#3351ff;
+  --sidebar-hover: rgba(255,255,255,.08);
+
+  /* Effects */
+  --ring: 0 0 0 3px rgba(91,157,255,.35);
+
+  /* Breadcrumb/Tree color tokens (dark defaults) */
+  --pill-bg: #10131b;
+  --pill-text: #bcd1ff;
+  --tree-fg: #d7def0;
+}
+:root.light{
+  --bg:#f6f8fc;
+  --elev:#ffffff;
+  --text:#1b2430;
+  --muted:#5b677a;
+  --primary:#2f6bff;
+  --danger:#e14b4b;
+  --border:#e5e9f1;
+
+  --bg-2: var(--elev);
+  --card: var(--elev);
+
+  --sidebar-bg:#ffffff;
+  --sidebar-text:#2a3550;
+  --sidebar-muted:#6b7691;
+  --sidebar-active:#2f6bff;
+  --sidebar-hover: rgba(0,0,0,.06);
+
+  --ring: 0 0 0 3px rgba(47,107,255,.25);
+
+  --pill-bg: #eef3ff;
+  --pill-text: #1f3a8a;
+  --tree-fg: #334155;
+}
+
+/**************************************
+ * GLOBAL
+ **************************************/
+*{box-sizing:border-box}
+html,body{height:100%}
+body{
+  margin:0;
+  background:var(--bg);
+  color:var(--text);
+  font:16px/1.5 system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji","Segoe UI Emoji";
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+/* Khi có .sidebar, nội dung bị đẩy sang phải đúng theo --sidebar-w */
+body:has(.sidebar){ padding-left: var(--sidebar-w); }
+
+a{color:inherit; text-decoration:none}
+button,input,select,textarea{font:inherit; color:inherit}
+button{cursor:pointer}
+img{max-width:100%; display:block}
+
+/**************************************
+ * SIDEBAR
+ **************************************/
+.sidebar{
+  position: fixed; inset: 0 auto 0 0;
+  width: var(--sidebar-w);
+  background: var(--sidebar-bg);
+  border-right:1px solid var(--border);
+  display:flex; flex-direction:column; gap:8px; z-index: 30;
+}
+.sidebar__logo{ display:flex; align-items:center; gap:10px; padding:18px 16px 10px; color:var(--sidebar-text); }
+.sidebar__logo .logo{ font-size:22px; }
+.sidebar__logo h2{ font-size:18px; margin:0; }
+.sidebar__nav{ display:flex; flex-direction:column; padding:6px; }
+.sidebar__nav a{
+  display:flex; align-items:center; gap:12px; padding:10px 12px; margin:2px 4px;
+  color:var(--sidebar-text);
+  border-radius:8px; transition: background .2s, color .2s, transform .06s ease;
+  outline: none; position: relative;
+}
+.sidebar__nav a:hover{ background: var(--sidebar-hover); color:#fff; }
+.sidebar__nav a:active{ transform: translateY(1px); }
+.sidebar__nav a .icon{ width:20px; display:inline-flex; justify-content:center; opacity:.9; }
+.sidebar__nav a .label{ flex:1; }
+.sidebar__group{ margin:4px 6px; }
+.sidebar__group>summary{
+  list-style:none; cursor:pointer; display:flex; align-items:center; gap:12px;
+  padding:10px 12px; border-radius:8px; color:var(--sidebar-text);
+  transition: background .2s, color .2s;
+  outline: none;
+}
+.sidebar__group>summary::-webkit-details-marker{ display:none; }
+.sidebar__group>summary:hover{ background: var(--sidebar-hover); color:#fff; }
+.sidebar__group[open]>summary{ background: var(--sidebar-hover); }
+.submenu{ display:flex; flex-direction:column; padding:6px 0 6px 32px; gap:2px; }
+.submenu a{ display:flex; align-items:center; gap:10px; padding:8px 10px; border-radius:8px; color:var(--sidebar-text); }
+.submenu a:hover{ background: var(--sidebar-hover); color:#fff; }
+
+/* Focus ring */
+.sidebar__nav a:focus-visible,
+.sidebar__group>summary:focus-visible,
+.submenu a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+.dialog:focus-visible { box-shadow: var(--ring); }
+
+/* Thu gọn label khi <900px nhưng vẫn desktop */
+@media (max-width: 900px){
+  :root{ --sidebar-w: 72px; }
+  .sidebar__logo h2{ display:none; }
+  .sidebar__nav a{ justify-content:center; gap:8px; }
+  .sidebar__nav a .label{ display:none; }
+}
+
+/* Nhấn mạnh active (gradient + thanh chỉ mục) */
+.sidebar__nav a.active{
+  background: linear-gradient(90deg, rgba(51,81,255,.18), rgba(51,81,255,0));
+  color:#fff; font-weight:600;
+}
+.sidebar__nav a.active::before{
+  content:"";
+  position:absolute; left:0; top:8px; bottom:8px;
+  width:4px; border-radius:4px;
+  background: var(--sidebar-active,#3351ff);
+  box-shadow: 0 0 0 2px rgba(51,81,255,.25);
+}
+
+/**************************************
+ * TOPBAR (phần bên phải)
+ **************************************/
+.topbar{
+  position:sticky; top:0; z-index: 25;
+  display:flex; align-items:center; justify-content:space-between;
+  padding:12px 16px; gap:12px; background:var(--elev); border-bottom:1px solid var(--border);
+}
+.brand{display:flex; align-items:center; gap:10px}
+.brand .logo{font-size:22px}
+.brand h1{font-size:18px; margin:0}
+
+.actions{display:flex; align-items:center; gap:8px; flex-wrap:wrap}
+.btn{
+  background:var(--bg); border:1px solid var(--border); color:var(--text);
+  padding:9px 12px; border-radius:10px; cursor:pointer; line-height:1; user-select:none;
+  transition: filter .12s ease, transform .06s ease, background-color .12s ease, color .12s ease, border-color .12s ease;
+  outline: none;
+}
+.btn:hover{filter:brightness(1.08)}
+.btn:active{transform:translateY(1px)}
+.btn:focus-visible{ box-shadow: var(--ring); }
+.btn[disabled]{ opacity:.55; cursor:not-allowed; filter:none; transform:none; }
+.btn-primary{background:var(--primary); border-color:transparent; color:#fff}
+.btn-danger{background:var(--danger); border-color:transparent; color:#fff}
+.btn-ghost{background:transparent}
+
+.search-group{
+  display:flex; align-items:stretch; gap:6px; background:var(--bg);
+  border:1px solid var(--border); border-radius:12px; padding:6px;
+}
+.search-group input{
+  background:transparent; border:none; color:var(--text); outline:none; min-width:240px;
+}
+.search-group input::placeholder{ color: color-mix(in oklab, var(--text) 45%, transparent); }
+
+/**************************************
+ * LEARNING: TOOLBAR + CONTENT
+ **************************************/
+.learning-wrap{ display:flex; flex-direction:column; min-height: calc(100vh - 60px); }
+
+.learning-toolbar{
+  position: sticky; top: 60px; /* nằm dưới topbar ~ 60px */
+  display:flex; align-items:center; justify-content:space-between; gap:12px;
+  padding:10px 16px; background:var(--elev); border-bottom:1px solid var(--border);
+  z-index:20;
+}
+.tools-left,.tools-right{display:flex; align-items:center; gap:10px}
+.muted{color:var(--muted)}
+
+.seg{
+  display:flex; gap:6px; padding:6px;
+  background:var(--bg-2); border:1px solid var(--border); border-radius:999px;
+}
+.seg__btn{
+  background:transparent; color:var(--muted); border:0;
+  padding:6px 12px; border-radius:999px;
+}
+.seg__btn.is-active{background:var(--primary); color:#fff}
+
+/* 2 cột: Tags (trái) | List (phải) */
+.learning-content{
+  display:grid; gap:16px; padding:16px;
+  grid-template-columns: 320px 1fr;
+}
+.learning-side{ position: sticky; top: calc(60px + 46px); align-self: start; height: fit-content; }
+.panel{
+  background:var(--elev); border:1px solid var(--border);
+  border-radius:14px; padding:12px; margin-bottom:12px;
+}
+.panel__title{margin:0 0 10px 0; font-size:15px}
+
+.tag-cloud{display:flex; flex-wrap:wrap; gap:8px}
+.tag{ padding:4px 10px; border:1px solid var(--border); border-radius:999px; background:transparent; color:var(--text); }
+.tag.is-active{background:var(--primary); color:#fff; border-color:transparent}
+
+/* Empty */
+.empty{
+  padding:24px; text-align:center; color:var(--muted);
+  border:1px dashed var(--border); border-radius:14px; background:var(--bg-2);
+}
+
+/**************************************
+ * LIST VIEW (thumb + title link + notes + tags)
+ **************************************/
+#item-list { list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:14px; }
+
+.list-item{
+  display:grid; grid-template-columns: 92px 1fr; gap:14px;
+  align-items:start; padding:12px; border:1px solid var(--border);
+  border-radius:12px; background:var(--elev);
+  transition: box-shadow .15s ease, transform .15s ease;
+}
+.list-item:hover{ box-shadow:0 8px 24px rgba(0,0,0,.15); transform: translateY(-1px); }
+
+.list-thumb{
+  width:92px; height:122px; border:1px solid var(--border); border-radius:8px;
+  background:#0b0e14 center/cover no-repeat; overflow:hidden; cursor:pointer;
+  display:grid; place-items:center; color:var(--muted); font-size:18px;
+}
+/* Ảnh trong thumbnail */
+.list-thumb img{
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.list-main{ display:flex; flex-direction:column; gap:6px; min-width:0; }
+
+.item-title{ margin:0; font-size:16px; font-weight:700; line-height:1.35; }
+.item-title a{ color:#5aa1ff; text-decoration:none; }
+.item-title a:hover{ text-decoration:underline; }
+
+.item-notes{
+  margin: 6px 0 0;
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.4;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.item-tags{ display:flex; flex-wrap:wrap; gap:6px; }
+.item-tags .tag{
+  font-size:12px; padding:3px 8px; border-radius:999px;
+  border:1px solid var(--border); background:rgba(255,255,255,.03);
+}
+
+/* Selection mode */
+.list-item.is-selected{
+  outline: 2px solid var(--primary);
+  box-shadow: 0 0 0 4px color-mix(in oklab, var(--primary) 30%, transparent);
+}
+
+/**************************************
+ * DIALOG (thêm tài liệu)
+ **************************************/
+.dialog{
+  border:none; padding:0; border-radius:16px; width:min(560px, 92vw);
+  background:var(--elev); color:var(--text); border:1px solid var(--border);
+  max-height: 90vh; overflow: hidden; z-index: 50;
+}
+.dialog::backdrop{background:rgba(0,0,0,.5)}
+.dialog__content{padding:16px; max-height:90vh; overflow:auto}
+.dialog__title{margin:0 0 12px; font-size:18px}
+.form-row{display:flex; flex-direction:column; gap:6px; margin-bottom:12px}
+.form-row input,.form-row select,.form-row textarea{
+  background:var(--bg); border:1px solid var(--border); color:var(--text);
+  padding:10px 12px; border-radius:10px; outline: none;
+}
+.form-row input:focus-visible,.form-row select:focus-visible,.form-row textarea:focus-visible{ box-shadow: var(--ring); }
+.dialog-actions{ display:flex; gap:8px; justify-content:flex-end; margin-top:14px; }
+
+/* 🔑 Login styles (chỉ thêm cho nút & dialog đăng nhập/đăng ký) */
+#btn-login[data-state="in"]{
+  /* Khi đã đăng nhập: dùng style nút thường, không primary */
+  background: var(--bg);
+  border: 1px solid var(--border);
+  color: var(--text);
+}
+#btn-login[data-state="in"]:hover{ filter: brightness(1.08); }
+
+#login-dialog h3, #signup-dialog h3 {
+  margin:0 0 12px;
+  font-size:18px;
+  text-align:center;
+}
+#login-dialog .form-error,
+#signup-dialog .form-error{
+  color: var(--danger);
+  font-size: 14px;
+  margin: 6px 0;
+}
+#login-dialog .dialog-actions,
+#signup-dialog .dialog-actions{
+  justify-content: space-between;
+}
+#login-dialog a,
+#signup-dialog a{
+  color: var(--primary);
+  text-decoration: none;
+}
+#login-dialog a:hover,
+#signup-dialog a:hover{
+  text-decoration: underline;
+}
+
+/**************************************
+ * SCROLLBARS
+ **************************************/
+*::-webkit-scrollbar{ width:10px; height:10px }
+*::-webkit-scrollbar-track{ background: transparent }
+*::-webkit-scrollbar-thumb{ background: color-mix(in oklab, var(--text) 20%, transparent); border-radius: 999px; border: 2px solid transparent; background-clip: padding-box; }
+
+/**************************************
+ * RESPONSIVE
+ **************************************/
+@media (max-width: 1200px){
+  .learning-content{grid-template-columns: 280px 1fr}
+}
+@media (max-width: 900px){
+  .learning-content{grid-template-columns: 1fr}
+  .learning-side{position: static}
+}
+@media (max-width: 520px){
+  .search-group input{min-width:0; width:160px}
+  #item-list{ gap:12px; }
+}
+
+/**************************************
+ * LIGHT THEME TWEAKS
+ **************************************/
+:root.light .sidebar__nav a{ color: var(--sidebar-text); }
+:root.light .sidebar__nav a:hover{ background: var(--sidebar-hover); color:var(--sidebar-text); }
+:root.light .sidebar__nav a:focus-visible{ box-shadow: 0 0 0 2px rgba(47,107,255,.45); }
+:root.light .sidebar__nav a.active{
+  background: linear-gradient(90deg, rgba(47,107,255,.14), rgba(47,107,255,0));
+  color: var(--sidebar-text);
+}
+:root.light .sidebar__nav a.active::before{
+  background: var(--sidebar-active);
+  box-shadow: 0 0 0 2px rgba(47,107,255,.2);
+}
+:root.light .sidebar__group[open] > summary{ background: rgba(0,0,0,.04); }
+:root.light .submenu a:hover{ background: rgba(0,0,0,.06); }
+
+
+
+/* === Login button: style giống .site-topbar__btn trong mẫu === */
+#btn-login{
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border: 1px solid var(--border, #2a3242);
+  border-radius: 10px;
+  background: var(--bg, #0f1115);
+  color: var(--text, #e6e6e6);
+  cursor: pointer;
+  line-height: 1;
+  transition: background .12s ease, filter .12s ease, transform .06s ease, border-color .12s ease;
+}
+#btn-login:hover{ background: color-mix(in oklab, var(--bg) 88%, #fff 12%); }
+#btn-login:active{ transform: translateY(1px); }
+#btn-login:focus-visible{ box-shadow: var(--ring, 0 0 0 3px rgba(91,157,255,.35)); }
+
+/* Khi đã đăng nhập: bỏ màu primary, giữ style trung tính + rút gọn email bằng JS */
+#btn-login[data-state="in"]{
+  background: var(--bg, #0f1115);
+  border-color: var(--border, #2a3242);
+  color: var(--text, #e6e6e6);
+}
+
+/* Khi chưa đăng nhập: cho phép dùng phiên bản “nổi bật” nếu có .btn-primary đi kèm */
+#btn-login[data-state="out"].btn-primary{
+  background: var(--primary, #5b9dff);
+  border-color: transparent;
+  color: #fff;
+}
+#btn-login[data-state="out"].btn-primary:hover{
+  filter: brightness(1.06);
+}
+
+/* === Dialog đăng nhập / đăng ký: căn giữa tiêu đề, form-row theo mẫu, link xanh === */
+#login-dialog, #signup-dialog{
+  border: none;
+  border-radius: 16px;
+  background: var(--elev, #151923);
+  color: var(--text, #e6e6e6);
+  border: 1px solid var(--border, #2a3242);
+  width: min(560px, 92vw);
+  max-height: 90vh;
+  overflow: hidden;
+}
+#login-dialog::backdrop, #signup-dialog::backdrop{
+  background: rgba(0,0,0,.5);
+}
+#login-dialog form, #signup-dialog form{
+  padding: 16px;
+  max-height: 90vh;
+  overflow: auto;
+}
+#login-dialog h3, #signup-dialog h3{
+  margin: 0 0 12px;
+  font-size: 18px;
+  text-align: center;
+}
+#login-dialog .form-row,
+#signup-dialog .form-row{
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 12px;
+}
+#login-dialog input,
+#signup-dialog input{
+  background: var(--bg, #0f1115);
+  border: 1px solid var(--border, #2a3242);
+  color: var(--text, #e6e6e6);
+  padding: 10px 12px;
+  border-radius: 10px;
+  outline: none;
+}
+#login-dialog input:focus-visible,
+#signup-dialog input:focus-visible{
+  box-shadow: var(--ring, 0 0 0 3px rgba(91,157,255,.35));
+}
+#login-dialog .dialog-actions,
+#signup-dialog .dialog-actions{
+  display: flex;
+  gap: 8px;
+  justify-content: space-between;
+  margin-top: 14px;
+}
+#login-dialog .form-error,
+#signup-dialog .form-error{
+  color: var(--danger, #ff6b6b);
+  font-size: 14px;
+  margin: 6px 0;
+}
+#login-dialog a, #signup-dialog a{
+  color: var(--primary, #5b9dff);
+  text-decoration: none;
+}
+#login-dialog a:hover, #signup-dialog a:hover{
+  text-decoration: underline;
+}
+
+/* Mobile full-screen dialog giống mẫu */
+@media (max-width: 960px){
+  #login-dialog, #signup-dialog{
+    width: 100vw;
+    height: 100dvh;
+    max-width: none;
+    margin: 0;
+    border-radius: 0;
+    background: var(--bg-2, var(--elev));
+    color: inherit;
+  }
+  #login-dialog form, #signup-dialog form{ padding: 14px; }
+}
+
+/* (Tuỳ chọn) Nếu bạn dùng topbar chung kiểu .site-topbar trong trang khác, 
+   có thể áp dụng cho .topbar hiện tại để đồng bộ chiều cao */
+.topbar{ min-height: 56px; }
