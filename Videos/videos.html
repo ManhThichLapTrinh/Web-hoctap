@@ -5,8 +5,23 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Videos - Kho Học Tập</title>
 
-  <link rel="icon" href="favicon.png">
-  <link rel="stylesheet" href="videos.css" />
+  <!-- Favicon & theme -->
+  <link rel="icon" href="../favicon.png">
+  <meta name="theme-color" content="#151923">
+
+  <!-- CSS chung (ở gốc repo) + CSS riêng của trang Videos -->
+  <link rel="stylesheet" href="../styles.css" />
+  <link rel="stylesheet" href="./videos.css" />
+
+  <!-- Áp theme sớm để tránh nháy nền khi load -->
+  <script>
+    (function () {
+      try {
+        const saved = localStorage.getItem("theme") || "dark";
+        document.documentElement.classList.toggle("light", saved === "light");
+      } catch (_) {}
+    })();
+  </script>
 </head>
 <body>
 
@@ -18,21 +33,21 @@
     </div>
 
     <div class="actions">
-      <button id="toggle-theme" class="btn" title="Chuyển theme">🌓</button>
+      <button id="toggle-theme" class="btn" title="Chuyển theme" aria-label="Chuyển theme" type="button">🌓</button>
 
       <div class="search-group">
-        <input id="vid-search" type="search" placeholder="Tìm video theo tiêu đề hoặc #tag..." />
-        <button id="vid-clear-search" class="btn btn-ghost" title="Xoá tìm kiếm">✖</button>
+        <input id="vid-search" type="search" placeholder="Tìm video theo tiêu đề hoặc #tag..." autocomplete="off" />
+        <button id="vid-clear-search" class="btn btn-ghost" title="Xoá tìm kiếm" aria-label="Xoá tìm kiếm" type="button">✖</button>
       </div>
 
-      <button id="btn-star" class="btn btn-ghost" title="Yêu thích">⭐</button>
+      <button id="btn-star" class="btn btn-ghost" title="Yêu thích" type="button">⭐</button>
       <!-- nút đăng nhập đồng bộ trang chính -->
-      <button id="btn-login" class="btn btn-primary">Đăng nhập</button>
+      <button id="btn-login" class="btn btn-primary" type="button">Đăng nhập</button>
     </div>
   </header>
 
   <!-- Sidebar -->
-  <aside class="sidebar">
+  <aside class="sidebar" aria-label="Thanh điều hướng">
     <div class="sidebar__logo">
       <span class="logo">🎵</span>
       <h2>Menu</h2>
@@ -42,7 +57,7 @@
       <a href="../index.html"><span class="icon">👤</span><span class="label">Cá Nhân</span></a>
       <a href="#"><span class="icon">✨</span><span class="label">Khám phá</span></a>
       <a href="../learning/learning.html"><span class="icon">#</span><span class="label">Learning</span></a>
-      <a href="videos.html" class="active"><span class="icon">📻</span><span class="label">Video</span></a>
+      <a href="./videos.html" class="active" aria-current="page"><span class="icon">📻</span><span class="label">Video</span></a>
       <a href="#"><span class="icon">⭐</span><span class="label">Yêu Thích</span></a>
 
       <details class="sidebar__group" id="lang-group">
@@ -67,8 +82,8 @@
           Tải lên video
           <input id="vid-file-input" type="file" accept="video/mp4,video/webm" multiple hidden />
         </label>
-        <button id="vid-open-add" class="btn btn-primary">+ Thêm link</button>
-        <button id="btn-toggle-delete" class="btn btn-danger">🗑️ Xoá video</button>
+        <button id="vid-open-add" class="btn btn-primary" type="button">+ Thêm link</button>
+        <button id="btn-toggle-delete" class="btn btn-danger" type="button">🗑️ Xoá video</button>
       </div>
       <div class="vid-tools-right">
         <span class="muted" id="vid-count">0 video</span>
@@ -81,143 +96,144 @@
     </section>
   </main>
 
-  <!-- Template thẻ video -->
-  <template id="vid-card-template">
-    <article class="card vid-card" draggable="true">
-      <div class="vid-thumb">
-        <button class="btn-play" data-play title="Xem">▶</button>
-      </div>
-      <h3 class="card-title" data-title></h3>
-      <p class="card-meta" data-meta></p>
-      <div class="card-actions">
-        <button class="btn btn-danger btn-del" data-delete hidden>🗑 Xoá</button>
-      </div>
-    </article>
-  </template>
+    <!-- Template thẻ video -->
+    <template id="vid-card-template">
+      <article class="card vid-card" draggable="true">
+        <div class="vid-thumb">
+          <button class="btn-play" data-play title="Xem" type="button">▶</button>
+        </div>
+        <h3 class="card-title" data-title></h3>
+        <p class="card-meta" data-meta></p>
+        <div class="card-actions">
+          <button class="btn btn-danger btn-del" data-delete hidden type="button">🗑 Xoá</button>
+        </div>
+      </article>
+    </template>
 
-  <!-- Dialog: thêm/sửa video (link) -->
-  <dialog id="vid-edit-dialog" class="dialog">
-    <form id="vid-edit-form" method="dialog">
-      <h3 id="vid-dialog-title">Thêm video</h3>
+    <!-- Dialog: thêm/sửa video (link) -->
+    <dialog id="vid-edit-dialog" class="dialog" aria-labelledby="vid-dialog-title" aria-modal="true">
+      <form id="vid-edit-form" method="dialog">
+        <h3 id="vid-dialog-title">Thêm video</h3>
 
-      <div class="form-row">
-        <label for="vid-title">Tiêu đề</label>
-        <input id="vid-title" type="text" placeholder="VD: Bài giảng Chương 1" required />
-      </div>
+        <div class="form-row">
+          <label for="vid-title">Tiêu đề</label>
+          <input id="vid-title" type="text" placeholder="VD: Bài giảng Chương 1" required />
+        </div>
 
-      <div class="form-row">
-        <label for="vid-url">Liên kết (YouTube/Vimeo/MP4)</label>
-        <input id="vid-url" type="url" placeholder="https://youtu.be/..., https://...mp4" required />
-        <div id="url-preview" class="url-preview" hidden>
-          <img id="url-preview-img" alt="Preview" />
-          <div class="meta">
-            <span id="url-preview-provider" class="provider"></span>
-            <span id="url-preview-title" class="title"></span>
+        <div class="form-row">
+          <label for="vid-url">Liên kết (YouTube/Vimeo/MP4)</label>
+          <input id="vid-url" type="url" placeholder="https://youtu.be/..., https://...mp4" required />
+          <div id="url-preview" class="url-preview" hidden>
+            <img id="url-preview-img" alt="Preview" />
+            <div class="meta">
+              <span id="url-preview-provider" class="provider"></span>
+              <span id="url-preview-title" class="title"></span>
+            </div>
           </div>
         </div>
-      </div>
 
-      <div class="form-row">
-        <label for="vid-tags">Tag</label>
-        <input id="vid-tags" type="text" placeholder="#ctdl #toan (cách nhau bởi khoảng trắng)" />
-      </div>
-
-      <menu class="dialog-actions">
-        <button value="cancel" class="btn">Huỷ</button>
-        <button id="vid-save" class="btn btn-primary" value="default">Lưu</button>
-      </menu>
-      <input type="hidden" id="vid-editing-id" />
-    </form>
-  </dialog>
-
-  <!-- DIALOG: THEATER -->
-  <dialog id="vid-theater-dialog" class="dialog dialog--theater">
-    <div class="theater">
-      <div class="theater__main">
-        <div class="theater__playerWrap">
-          <div id="theater-player" class="theater__player"></div>
+        <div class="form-row">
+          <label for="vid-tags">Tag</label>
+          <input id="vid-tags" type="text" placeholder="#ctdl #toan (cách nhau bởi khoảng trắng)" />
         </div>
-        <div class="theater__meta">
-          <h3 id="theater-title" class="theater__title">Tên video</h3>
-          <div class="theater__hint">Tip: nếu video bị tắt tiếng, hãy nhấn vào khung video để bật tiếng.</div>
-          <div class="theater__note">
-            <label for="theater-note">Ghi chú</label>
-            <textarea id="theater-note" placeholder="Viết ghi chú cho video này..."></textarea>
-            <div id="note-status" class="note-status" aria-live="polite"></div>
+
+        <menu class="dialog-actions">
+          <button value="cancel" class="btn" type="button">Huỷ</button>
+          <button id="vid-save" class="btn btn-primary" value="default">Lưu</button>
+        </menu>
+        <input type="hidden" id="vid-editing-id" />
+      </form>
+    </dialog>
+
+    <!-- DIALOG: THEATER -->
+    <dialog id="vid-theater-dialog" class="dialog dialog--theater" aria-modal="true">
+      <div class="theater">
+        <div class="theater__main">
+          <div class="theater__playerWrap">
+            <div id="theater-player" class="theater__player"></div>
+          </div>
+          <div class="theater__meta">
+            <h3 id="theater-title" class="theater__title">Tên video</h3>
+            <div class="theater__hint">Tip: nếu video bị tắt tiếng, hãy nhấn vào khung video để bật tiếng.</div>
+            <div class="theater__note">
+              <label for="theater-note">Ghi chú</label>
+              <textarea id="theater-note" placeholder="Viết ghi chú cho video này..."></textarea>
+              <div id="note-status" class="note-status" aria-live="polite"></div>
+            </div>
           </div>
         </div>
+
+        <aside class="theater__side">
+          <div class="theater__side-header">Gợi ý</div>
+          <div id="theater-list" class="theater__list"></div>
+        </aside>
       </div>
+    </dialog>
 
-      <aside class="theater__side">
-        <div class="theater__side-header">Gợi ý</div>
-        <div id="theater-list" class="theater__list"></div>
-      </aside>
-    </div>
-  </dialog>
+    <!-- Modal: Login -->
+    <dialog id="login-dialog" class="dialog" aria-labelledby="login-title" aria-modal="true">
+      <form id="login-form" method="dialog" novalidate>
+        <h3 id="login-title">Đăng nhập</h3>
 
-  <!-- Modal: Login -->
-  <dialog id="login-dialog" class="dialog" aria-labelledby="login-title" aria-modal="true">
-    <form id="login-form" method="dialog" novalidate>
-      <h3 id="login-title">Đăng nhập</h3>
+        <div class="form-row">
+          <label for="login-email">Email</label>
+          <input id="login-email" type="email" placeholder="you@example.com" required autocomplete="email" />
+        </div>
 
-      <div class="form-row">
-        <label for="login-email">Email</label>
-        <input id="login-email" type="email" placeholder="you@example.com" required autocomplete="email" />
-      </div>
+        <div class="form-row">
+          <label for="login-password">Mật khẩu</label>
+          <input id="login-password" type="password" placeholder="Tối thiểu 6 ký tự" minlength="6" required autocomplete="current-password" />
+        </div>
 
-      <div class="form-row">
-        <label for="login-password">Mật khẩu</label>
-        <input id="login-password" type="password" placeholder="Tối thiểu 6 ký tự" minlength="6" required autocomplete="current-password" />
-      </div>
+        <p id="login-error" class="form-error" hidden></p>
 
-      <p id="login-error" class="form-error" hidden></p>
+        <menu class="dialog-actions">
+          <button value="cancel" class="btn" type="button">Huỷ</button>
+          <button id="login-submit" class="btn btn-primary" value="default" type="submit">Đăng nhập</button>
+        </menu>
 
-      <menu class="dialog-actions">
-        <button value="cancel" class="btn" type="button">Huỷ</button>
-        <button id="login-submit" class="btn btn-primary" value="default" type="submit">Đăng nhập</button>
-      </menu>
+        <p style="margin:8px 0 0; font-size:14px">
+          Chưa có tài khoản?
+          <a href="#" id="login-to-signup">Đăng ký</a>
+        </p>
+      </form>
+    </dialog>
 
-      <p style="margin:8px 0 0; font-size:14px">
-        Chưa có tài khoản?
-        <a href="#" id="login-to-signup">Đăng ký</a>
-      </p>
-    </form>
-  </dialog>
+    <!-- Modal: Signup -->
+    <dialog id="signup-dialog" class="dialog" aria-labelledby="signup-title" aria-modal="true">
+      <form id="signup-form" method="dialog" novalidate>
+        <h3 id="signup-title">Tạo tài khoản</h3>
 
-  <!-- Modal: Signup -->
-  <dialog id="signup-dialog" class="dialog" aria-labelledby="signup-title" aria-modal="true">
-    <form id="signup-form" method="dialog" novalidate>
-      <h3 id="signup-title">Tạo tài khoản</h3>
+        <div class="form-row">
+          <label for="signup-email">Email</label>
+          <input id="signup-email" type="email" required autocomplete="email" />
+        </div>
 
-      <div class="form-row">
-        <label for="signup-email">Email</label>
-        <input id="signup-email" type="email" required autocomplete="email" />
-      </div>
+        <div class="form-row">
+          <label for="signup-password">Mật khẩu</label>
+          <input id="signup-password" type="password" placeholder="Tối thiểu 6 ký tự" minlength="6" required autocomplete="new-password" />
+        </div>
 
-      <div class="form-row">
-        <label for="signup-password">Mật khẩu</label>
-        <input id="signup-password" type="password" placeholder="Tối thiểu 6 ký tự" minlength="6" required autocomplete="new-password" />
-      </div>
+        <div class="form-row">
+          <label for="signup-password2">Nhập lại mật khẩu</label>
+          <input id="signup-password2" type="password" minlength="6" required autocomplete="new-password" />
+        </div>
 
-      <div class="form-row">
-        <label for="signup-password2">Nhập lại mật khẩu</label>
-        <input id="signup-password2" type="password" minlength="6" required autocomplete="new-password" />
-      </div>
+        <p id="signup-error" class="form-error" hidden></p>
 
-      <p id="signup-error" class="form-error" hidden></p>
+        <menu class="dialog-actions">
+          <button value="cancel" class="btn" type="button">Huỷ</button>
+          <button id="signup-submit" class="btn btn-primary" value="default" type="submit">Đăng ký</button>
+        </menu>
 
-      <menu class="dialog-actions">
-        <button value="cancel" class="btn" type="button">Huỷ</button>
-        <button id="signup-submit" class="btn btn-primary" value="default" type="submit">Đăng ký</button>
-      </menu>
+        <p style="margin:8px 0 0; font-size:14px">
+          Đã có tài khoản?
+          <a href="#" id="signup-to-login">Đăng nhập</a>
+        </p>
+      </form>
+    </dialog>
 
-      <p style="margin:8px 0 0; font-size:14px">
-        Đã có tài khoản?
-        <a href="#" id="signup-to-login">Đăng nhập</a>
-      </p>
-    </form>
-  </dialog>
-
-  <script type="module" src="videos.js"></script>
+  <!-- JS riêng trang Videos (cùng thư mục /Videos) -->
+  <script type="module" src="./videos.js"></script>
 </body>
 </html>
