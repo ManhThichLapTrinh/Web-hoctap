@@ -5,12 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Kho Học Tập</title>
 
-  <!-- Đặt base để mọi đường dẫn tương đối tính từ gốc site -->
-  <base href="/" />
-
-  <link rel="icon" href="/favicon.png">
+  <link rel="icon" href="./favicon.png">
   <meta name="theme-color" content="#151923">
-  <link rel="stylesheet" href="/styles.css" /><!-- Áp theme sớm để tránh nhấp nháy -->
+  <link rel="stylesheet" href="./styles.css" /><!-- Áp theme sớm để tránh nhấp nháy -->
+
   <script>
     (function () {
       try {
@@ -21,8 +19,6 @@
   </script>
 </head>
 <body>
-
-  
 
   <noscript>
     <div style="padding:12px;background:#ffd8d8;color:#651d1d;text-align:center">
@@ -60,12 +56,12 @@
     </div>
 
     <nav class="sidebar__nav">
-      <a href="/index.html" id="nav-home" class="active" aria-current="page" data-route="home">
+      <a href="./index.html" id="nav-home" class="active" aria-current="page" data-route="home">
         <span class="icon">👤</span><span class="label">Cá nhân</span>
       </a>
       <a href="#" data-route="discover"><span class="icon">✨</span><span class="label">Khám phá</span></a>
-      <a href="/learning/learning.html" data-route="learning"><span class="icon">#</span><span class="label">Learning</span></a>
-      <a href="/Videos/videos.html" data-route="videos"><span class="icon">📻</span><span class="label">Video</span></a>
+      <a href="./learning/learning.html" data-route="learning"><span class="icon">#</span><span class="label">Learning</span></a>
+      <a href="./Videos/videos.html" data-route="videos"><span class="icon">📻</span><span class="label">Video</span></a>
 
       <a href="#" data-route="favorites"><span class="icon">⭐</span><span class="label">Yêu Thích</span></a>
 
@@ -78,7 +74,7 @@
         </div>
       </details>
 
-      <a href="/materials-web/materials.html" data-route="materials"><span class="icon">📂</span><span class="label">Materials</span></a>
+      <a href="./materials-web/materials.html" data-route="materials"><span class="icon">📂</span><span class="label">Materials</span></a>
       <a href="#" data-route="pinned"><span class="icon">🏆</span><span class="label">Quan Tâm</span></a>
       <a href="#" data-route="special"><span class="icon">🎥</span><span class="label">Đặc biệt</span></a>
     </nav>
@@ -110,7 +106,7 @@
       <section aria-labelledby="video-heading">
         <div class="page-header">
           <h2 id="video-heading">Video</h2>
-          <a href="/Videos/videos.html" class="btn btn-ghost" id="view-all-videos" aria-label="Xem tất cả video">Xem tất cả</a>
+          <a href="./Videos/videos.html" class="btn btn-ghost" id="view-all-videos" aria-label="Xem tất cả video">Xem tất cả</a>
         </div>
         <div id="video-list" class="grid" role="list" data-home-limit="3"></div>
         <p id="video-empty" class="empty" hidden>Chưa có video. Nhấn “Đăng nhập” để thêm nhé!</p>
@@ -120,7 +116,7 @@
       <section aria-labelledby="doc-heading">
         <div class="page-header">
           <h2 id="doc-heading">Tài liệu</h2>
-          <a href="/materials-web/materials.html" class="btn btn-ghost" id="view-all-docs" aria-label="Xem tất cả tài liệu">Xem tất cả</a>
+          <a href="./materials-web/materials.html" class="btn btn-ghost" id="view-all-docs" aria-label="Xem tất cả tài liệu">Xem tất cả</a>
         </div>
         <div id="doc-list" class="grid" role="list" data-home-limit="3"></div>
         <p id="doc-empty" class="empty" hidden>Chưa có tài liệu. Nhấn “Đăng nhập” để thêm nhé!</p>
@@ -279,5 +275,6 @@
   </template>
 
   <!-- App -->
-  <script type="module" src="/app.js"></script></body>
+  <script type="module" src="./app.js"></script>
+</body>
 </html>
