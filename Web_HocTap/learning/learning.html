@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Learning - Kho Học Tập</title>
+
+  <link rel="icon" href="../favicon.png">
+  <link rel="stylesheet" href="./learning.css" />
+</head>
+<body>
+  <!-- SIDEBAR (bên trái, full height) -->
+  <aside class="sidebar">
+    <div class="sidebar__logo">
+      <span class="logo">🎵</span>
+      <h2>Menu</h2>
+    </div>
+
+    <nav class="sidebar__nav">
+      <a href="../index.html"><span class="icon">👤</span><span class="label">Cá Nhân</span></a>
+      <a href="#"><span class="icon">✨</span><span class="label">Khám phá</span></a>
+      <a href="./learning.html" class="active"><span class="icon">#</span><span class="label">Learning</span></a>
+      <a href="../videos/videos.html"><span class="icon">📻</span><span class="label">Video</span></a>
+
+      <a href="#"><span class="icon">⭐</span><span class="label">Yêu Thích</span></a>
+
+      <details class="sidebar__group" id="lang-group">
+        <summary><span class="icon">🌐</span><span class="label">Ngôn ngữ</span></summary>
+        <div class="submenu">
+          <a href="#" data-lang="en"><span>🇬🇧</span> Tiếng Anh</a>
+          <a href="#" data-lang="ja"><span>🇯🇵</span> Tiếng Nhật</a>
+          <a href="#" data-lang="zh"><span>🇨🇳</span> Tiếng Trung</a>
+        </div>
+      </details>
+
+      <a href="../materials-web/materials.html"><span class="icon">📂</span><span class="label">Materials</span></a>
+      <a href="#"><span class="icon">🏆</span><span class="label">Quan Tâm</span></a>
+      <a href="#"><span class="icon">🎥</span><span class="label">Đặc biệt</span></a>
+    </nav>
+  </aside>
+
+  <!-- MAIN-AREA (bên phải của sidebar) -->
+  <div class="main-area">
+    <!-- TOPBAR (chỉ ở phần bên phải) -->
+    <header class="topbar">
+      <div class="brand">
+        <span class="logo">📚</span>
+        <h1>Kho Học Tập</h1>
+      </div>
+
+      <div class="actions">
+        <button id="toggle-theme" class="btn" title="Chuyển theme">🌓</button>
+
+        <div class="search-group">
+          <input id="learning-search" type="search" placeholder="Tìm tài liệu/video theo tiêu đề hoặc #tag..." />
+          <button id="learning-clear-search" class="btn btn-ghost" title="Xoá tìm kiếm">✖</button>
+        </div>
+
+        <button id="btn-star" class="btn btn-ghost" title="Yêu thích">⭐</button>
+        <button id="btn-login" class="btn btn-primary">Đăng nhập</button>
+      </div>
+    </header>
+
+    <!-- MAIN WRAPPER (nội dung learning) -->
+    <main class="learning-wrap">
+      <!-- Thanh công cụ Learning (sticky dưới topbar) -->
+      <header class="learning-toolbar">
+        <div class="tools-left">
+          <button id="btn-select" class="btn btn-ghost" type="button">☑ Chọn</button>
+
+          <div class="seg" role="tablist" aria-label="Bộ lọc loại tài liệu">
+            <button class="seg__btn is-active" data-type="all" role="tab" aria-selected="true">All</button>
+            <button class="seg__btn" data-type="video" role="tab" aria-selected="false">Video</button>
+            <button class="seg__btn" data-type="doc" role="tab" aria-selected="false">Doc</button>
+          </div>
+        </div>
+
+        <div class="tools-right">
+          <button id="btn-edit" class="btn" type="button" disabled>✎ Sửa</button>
+          <button id="btn-delete" class="btn btn-danger" type="button" disabled>🗑 Xoá</button>
+          <button id="open-add" class="btn btn-primary" type="button">➕ Thêm tài liệu mới</button>
+          <span class="muted" id="learning-count">0 mục</span>
+        </div>
+      </header>
+
+      <!-- Nội dung 2 cột: trái Tags, phải List -->
+      <section class="learning-content">
+        <aside class="learning-side">
+          <section class="panel">
+            <h3 class="panel__title">Tags</h3>
+            <div id="tag-cloud" class="tag-cloud" aria-live="polite"></div>
+          </section>
+        </aside>
+
+        <section class="learning-main">
+          <div id="empty-hint" class="empty" hidden>Chưa có tài liệu nào. Hãy thêm bằng nút trên thanh công cụ.</div>
+          <ul id="item-list" aria-live="polite"></ul>
+          <!-- ĐÃ BỎ viewer/preview theo yêu cầu -->
+        </section>
+      </section>
+    </main>
+  </div>
+
+  <!-- Dialog thêm tài liệu -->
+  <dialog id="add-dialog" class="dialog" aria-labelledby="add-title">
+    <form id="add-form" method="dialog" autocomplete="off" class="dialog__content">
+      <h3 id="add-title" class="dialog__title">Thêm tài liệu</h3>
+
+      <div class="form-row">
+        <label for="f-title">Tiêu đề</label>
+        <input id="f-title" type="text" required placeholder="Tên tài liệu/video" />
+      </div>
+
+      <!-- BỎ 'Loại' — JS sẽ tự suy loại từ URL -->
+
+      <div class="form-row">
+        <label for="f-url">URL</label>
+        <input id="f-url" type="url" required placeholder="https://youtu.be/... hoặc https://..." />
+      </div>
+
+      <div class="form-row">
+        <label for="f-tags">Tags (phân tách bằng dấu phẩy)</label>
+        <input id="f-tags" type="text" placeholder="js,react,algorithm…" />
+      </div>
+
+      <!-- THÊM 'Ghi chú' -->
+      <div class="form-row">
+        <label for="f-notes">Ghi chú</label>
+        <textarea id="f-notes" rows="4" placeholder="Ghi chú cho tài liệu này…"></textarea>
+      </div>
+
+      <menu class="dialog-actions">
+        <button value="cancel" class="btn">Huỷ</button>
+        <button id="add-save" class="btn btn-primary" type="submit">Lưu</button>
+      </menu>
+
+      <!-- Hình ảnh (tuỳ chọn) -->
+      <div class="form-row">
+        <label for="f-thumb-file">Hình ảnh (chọn file)</label>
+        <input id="f-thumb-file" type="file" accept="image/*" />
+        <small>Ưu tiên file nếu chọn; nếu không, có thể dán URL ảnh bên dưới.</small>
+      </div>
+
+      <div class="form-row">
+        <label for="f-thumb-url">Hoặc URL hình ảnh</label>
+        <input id="f-thumb-url" type="url" placeholder="https://...jpg, https://...png" />
+      </div>
+    </form>
+  </dialog>
+
+  <!-- ✅ Dialog Đăng nhập -->
+  <dialog id="login-dialog" class="dialog" aria-labelledby="login-title">
+    <form id="login-form" method="dialog" novalidate>
+      <h3 id="login-title">Đăng nhập</h3>
+      <div class="form-row">
+        <label for="login-email">Email</label>
+        <input id="login-email" type="email" required autocomplete="email" />
+      </div>
+      <div class="form-row">
+        <label for="login-password">Mật khẩu</label>
+        <input id="login-password" type="password" minlength="6" required autocomplete="current-password" />
+      </div>
+      <p id="login-error" class="form-error" hidden></p>
+      <menu class="dialog-actions">
+        <button value="cancel" class="btn">Huỷ</button>
+        <button id="login-submit" class="btn btn-primary">Đăng nhập</button>
+      </menu>
+      <p style="font-size:14px">Chưa có tài khoản? <a href="#" id="login-to-signup">Đăng ký</a></p>
+    </form>
+  </dialog>
+
+  <!-- ✅ Dialog Đăng ký -->
+  <dialog id="signup-dialog" class="dialog" aria-labelledby="signup-title">
+    <form id="signup-form" method="dialog" novalidate>
+      <h3 id="signup-title">Tạo tài khoản</h3>
+      <div class="form-row">
+        <label for="signup-email">Email</label>
+        <input id="signup-email" type="email" required autocomplete="email" />
+      </div>
+      <div class="form-row">
+        <label for="signup-password">Mật khẩu</label>
+        <input id="signup-password" type="password" minlength="6" required autocomplete="new-password" />
+      </div>
+      <div class="form-row">
+        <label for="signup-password2">Nhập lại mật khẩu</label>
+        <input id="signup-password2" type="password" minlength="6" required autocomplete="new-password" />
+      </div>
+      <p id="signup-error" class="form-error" hidden></p>
+      <menu class="dialog-actions">
+        <button value="cancel" class="btn">Huỷ</button>
+        <button id="signup-submit" class="btn btn-primary">Đăng ký</button>
+      </menu>
+      <p style="font-size:14px">Đã có tài khoản? <a href="#" id="signup-to-login">Đăng nhập</a></p>
+    </form>
+  </dialog>
+
+  <!-- Scripts -->
+  <script type="module">
+    /* Đồng bộ theme giữa các trang & Firestore */
+    import { initThemeSync } from "../js/theme-sync.js";
+    initThemeSync({ toggleSelector: "#toggle-theme" });
+  </script>
+
+  <script type="module" src="./learning.js"></script>
+</body>
+</html>
